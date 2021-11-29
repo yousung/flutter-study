@@ -30,12 +30,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String sum = '';
 
-  void _incrementCounter() {
+  TextEditingController value1 = TextEditingController();
+  TextEditingController value2 = TextEditingController();
+  FocusNode fn = FocusNode();
+
+  final List _buttonList = ['더하기', '빼기', '곱하기', '나누기'];
+  final List<DropdownMenuItem<String>> _dropDownMenuItems = [];
+  String _buttonText = '';
+
+  onPress() {
     setState(() {
-      _counter++;
+      int result = int.parse(value1.value.text) + int.parse(value2.value.text);
+      sum = '$result';
+
+      value1.text = '';
+      value2.text = '';
+      fn.requestFocus();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    for (var item in _buttonList) {
+      _dropDownMenuItems.add(DropdownMenuItem(
+        child: Text(item),
+        value: item,
+      ));
+    }
+    _buttonText = _dropDownMenuItems[0].value!;
   }
 
   @override
@@ -44,24 +69,45 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            const Padding(
+              padding: EdgeInsets.all(15),
+              child: Text('Flutter'),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: TextField(
+                keyboardType: TextInputType.number,
+                controller: value1,
+                focusNode: fn,
+              ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: TextField(
+                keyboardType: TextInputType.number,
+                controller: value2,
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(15),
+                child: DropdownButton(
+                  items: _dropDownMenuItems,
+                  value: _buttonText,
+                  onChanged: (value) {
+                    setState(() {
+                      _buttonText = '$value';
+                    });
+                  },
+                )),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Text('결과 : $sum'),
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
